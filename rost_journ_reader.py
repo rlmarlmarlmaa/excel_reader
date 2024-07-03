@@ -1,18 +1,23 @@
 import pandas as pd
 import openpyxl
 import numpy as np
+import re
 
-file = "sample.xlsx"
-df = pd.read_excel(file)
+def xlsx_edit(file):
+    df = pd.read_excel(file)
 
-df = df.loc[:, ['Время', 'Т обр']]
+    df = df.loc[:, ['Время', 'Т обр']]
 
-df['Время'] = df['Время'].apply(lambda x: str(x))
-df['Т обр'] = df['Т обр'].apply(lambda x: str(x))
+    df['Время'] = df['Время'].apply(lambda x: str(x))
+    df['Т обр'] = df['Т обр'].apply(lambda x: str(x))
 
-df['Время'] = df['Время'].replace('nan', '')
-df['Т обр'] = df['Т обр'].replace('nan', '')
+    df['Время'] = df['Время'].replace('nan', '')
+    df['Т обр'] = df['Т обр'].replace('nan', '')
 
-df['Время'] = df['Время'].str.replace(r'[\d\d:\d\d:\d\d]', '')
+    df['Время'] = df['Время'].apply(lambda x: re.sub(r'\d\d:\d\d:\d\d', '', x))
 
-print(df.head(50))
+    curr_date = ''
+    df = df.loc[(df['Т обр'] != '') & (df['Т обр'].str.startswith('B'))]
+    return df
+
+print(xlsx_edit('sample.xlsx'))
